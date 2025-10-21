@@ -40,21 +40,6 @@ interface TshirtDialogProps {
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
-const COMMON_COLORS = [
-  { name: "White", value: "#FFFFFF" },
-  { name: "Black", value: "#000000" },
-  { name: "Gray", value: "#808080" },
-  { name: "Navy", value: "#001F3F" },
-  { name: "Red", value: "#FF4136" },
-  { name: "Blue", value: "#0074D9" },
-  { name: "Green", value: "#2ECC40" },
-  { name: "Yellow", value: "#FFDC00" },
-  { name: "Orange", value: "#FF851B" },
-  { name: "Purple", value: "#B10DC9" },
-  { name: "Pink", value: "#F012BE" },
-  { name: "Maroon", value: "#85144B" },
-];
-
 export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) {
   const { toast } = useToast();
   const isEditing = !!tshirt;
@@ -63,7 +48,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
     resolver: zodResolver(insertTshirtSchema),
     defaultValues: {
       size: "",
-      color: "#FFFFFF",
+      color: "",
     },
   });
 
@@ -77,7 +62,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
       } else {
         form.reset({
           size: "",
-          color: "#FFFFFF",
+          color: "",
         });
       }
     }
@@ -186,73 +171,14 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Color</FormLabel>
-                  <div className="space-y-3">
-                    {/* Color Picker */}
-                    <div className="flex items-center gap-3">
-                      <FormControl>
-                        <div className="relative">
-                          <input
-                            type="color"
-                            {...field}
-                            className="sr-only"
-                            data-testid="input-color-picker"
-                            id="color-picker"
-                          />
-                          <label
-                            htmlFor="color-picker"
-                            className="flex items-center gap-3 cursor-pointer hover-elevate active-elevate-2 rounded-md border p-3"
-                          >
-                            <div
-                              className="w-10 h-10 rounded-md border shadow-sm flex-shrink-0"
-                              style={{ backgroundColor: field.value }}
-                            />
-                            <div className="flex-1">
-                              <div className="text-sm font-medium">Custom Color</div>
-                              <div className="text-xs text-muted-foreground">
-                                {field.value.toUpperCase()}
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </FormControl>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="#FFFFFF"
-                          value={field.value}
-                          onChange={field.onChange}
-                          className="flex-1"
-                          data-testid="input-color-hex"
-                        />
-                      </FormControl>
-                    </div>
-
-                    {/* Common Colors */}
-                    <div>
-                      <div className="text-sm font-medium mb-2">Common Colors</div>
-                      <div className="grid grid-cols-6 gap-2">
-                        {COMMON_COLORS.map((color) => (
-                          <button
-                            key={color.value}
-                            type="button"
-                            onClick={() => field.onChange(color.value)}
-                            className="group relative"
-                            title={color.name}
-                            data-testid={`button-color-${color.name.toLowerCase()}`}
-                          >
-                            <div
-                              className={`w-10 h-10 rounded-md border-2 shadow-sm transition-all hover-elevate ${
-                                field.value.toUpperCase() === color.value.toUpperCase()
-                                  ? "border-primary ring-2 ring-primary ring-offset-2"
-                                  : "border-border"
-                              }`}
-                              style={{ backgroundColor: color.value }}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="e.g., Red, Blue, Green"
+                      {...field}
+                      data-testid="input-color"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

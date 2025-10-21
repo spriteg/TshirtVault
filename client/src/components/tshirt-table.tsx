@@ -43,11 +43,6 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                       Color
                     </span>
                   </th>
-                  <th className="px-6 py-4 text-left">
-                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Preview
-                    </span>
-                  </th>
                   <th className="px-6 py-4 text-right">
                     <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       Actions
@@ -71,14 +66,6 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                       <span className="text-sm" data-testid={`text-color-${index}`}>
                         {tshirt.color}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div
-                        className="w-8 h-8 rounded-md border shadow-sm"
-                        style={{ backgroundColor: tshirt.color }}
-                        title={tshirt.color}
-                        data-testid={`preview-color-${index}`}
-                      />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
@@ -113,30 +100,22 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
         {tshirts.map((tshirt, index) => (
           <Card key={tshirt.id} className="p-4" data-testid={`card-tshirt-${index}`}>
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4 flex-1 min-w-0">
-                <div
-                  className="w-12 h-12 rounded-md border shadow-sm flex-shrink-0"
-                  style={{ backgroundColor: tshirt.color }}
-                  title={tshirt.color}
-                  data-testid={`preview-color-mobile-${index}`}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Size
-                    </span>
-                    <span className="font-medium" data-testid={`text-size-mobile-${index}`}>
-                      {tshirt.size}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Color
-                    </span>
-                    <span className="text-sm truncate" data-testid={`text-color-mobile-${index}`}>
-                      {tshirt.color}
-                    </span>
-                  </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Size
+                  </span>
+                  <span className="font-medium" data-testid={`text-size-mobile-${index}`}>
+                    {tshirt.size}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Color
+                  </span>
+                  <span className="text-sm truncate" data-testid={`text-color-mobile-${index}`}>
+                    {tshirt.color}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-col gap-2 flex-shrink-0">
