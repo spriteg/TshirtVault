@@ -96,7 +96,7 @@ export default function Home() {
               {/* Size Filter */}
               <SizeFilter
                 selectedSizes={selectedSizes}
-                onSizeToggle={(size) => {
+                onSizeToggle={(size: string) => {
                   setSelectedSizes(prev =>
                     prev.includes(size)
                       ? prev.filter(s => s !== size)
