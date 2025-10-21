@@ -43,7 +43,7 @@ export function TshirtTableSkeleton() {
                       <Skeleton className="h-5 w-24" />
                     </td>
                     <td className="px-6 py-4">
-                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-5 w-12" />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
@@ -64,12 +64,10 @@ export function TshirtTableSkeleton() {
         {[...Array(3)].map((_, i) => (
           <Card key={i} className="p-4">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4 flex-1">
-                <Skeleton className="w-12 h-12 rounded-md flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-32" />
-                </div>
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-16" />
               </div>
               <div className="flex flex-col gap-2">
                 <Skeleton className="h-9 w-9" />

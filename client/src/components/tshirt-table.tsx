@@ -43,6 +43,11 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                       Color
                     </span>
                   </th>
+                  <th className="px-6 py-4 text-left">
+                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      Quantity
+                    </span>
+                  </th>
                   <th className="px-6 py-4 text-right">
                     <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       Actions
@@ -65,6 +70,11 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                     <td className="px-6 py-4">
                       <span className="text-sm" data-testid={`text-color-${index}`}>
                         {tshirt.color}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium" data-testid={`text-quantity-${index}`}>
+                        {tshirt.quantity}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -109,12 +119,20 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                     {tshirt.size}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs uppercase tracking-wide text-muted-foreground">
                     Color
                   </span>
                   <span className="text-sm truncate" data-testid={`text-color-mobile-${index}`}>
                     {tshirt.color}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Qty
+                  </span>
+                  <span className="text-sm font-medium" data-testid={`text-quantity-mobile-${index}`}>
+                    {tshirt.quantity}
                   </span>
                 </div>
               </div>

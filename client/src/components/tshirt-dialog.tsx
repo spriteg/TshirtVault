@@ -49,6 +49,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
     defaultValues: {
       size: "",
       color: "",
+      quantity: 0,
     },
   });
 
@@ -58,18 +59,20 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
         form.reset({
           size: tshirt.size,
           color: tshirt.color,
+          quantity: tshirt.quantity,
         });
       } else {
         form.reset({
           size: "",
           color: "",
+          quantity: 0,
         });
       }
     }
   }, [open, tshirt, form]);
 
   const createMutation = useMutation({
-    mutationFn: async (data: { size: string; color: string }) => {
+    mutationFn: async (data: { size: string; color: string; quantity: number }) => {
       return await apiRequest("POST", "/api/tshirts", data);
     },
     onSuccess: () => {
@@ -91,7 +94,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: { size: string; color: string }) => {
+    mutationFn: async (data: { size: string; color: string; quantity: number }) => {
       return await apiRequest("PUT", `/api/tshirts/${tshirt?.id}`, data);
     },
     onSuccess: () => {
@@ -112,7 +115,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
     },
   });
 
-  const onSubmit = (data: { size: string; color: string }) => {
+  const onSubmit = (data: { size: string; color: string; quantity: number }) => {
     if (isEditing) {
       updateMutation.mutate(data);
     } else {
@@ -177,6 +180,27 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
                       placeholder="e.g., Red, Blue, Green"
                       {...field}
                       data-testid="input-color"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Quantity Field */}
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      data-testid="input-quantity"
                     />
                   </FormControl>
                   <FormMessage />
