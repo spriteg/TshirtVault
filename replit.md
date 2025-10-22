@@ -2,9 +2,12 @@
 
 ## Overview
 
-This is a full-stack t-shirt inventory management application built with React, Express, and PostgreSQL. The application allows users to create, read, update, and delete t-shirt records with size, color, and quantity information. It features a clean, modern UI inspired by Linear and Notion's design principles, with support for both light and dark themes.
+This is a full-stack t-shirt inventory management application built with React, Express, and PostgreSQL. The application requires user authentication and allows authenticated users to create, read, update, and delete t-shirt records with size, color, and quantity information. It features a clean, modern UI inspired by Linear and Notion's design principles, with support for both light and dark themes.
 
-**Key Feature**: Inventory is displayed grouped by color, with all sizes and quantities for each color shown inline on the same line as the color name.
+**Key Features**:
+- **Authentication Required**: Users must log in with email/password (or social auth) via Replit Auth to access the application
+- **Protected Inventory**: All inventory data and operations require authentication
+- **Grouped Display**: Inventory is displayed grouped by color, with all sizes and quantities for each color shown inline on the same line as the color name
 
 ## User Preferences
 
@@ -31,7 +34,8 @@ Preferred communication style: Simple, everyday language.
 **Component Structure**
 - Modular UI components in `client/src/components/ui/` (shadcn/ui components)
 - Feature components for t-shirt management (dialog, grouped color display, filters, empty states)
-- Single-page application with home route and 404 fallback
+- Authentication components (login page, useAuth hook, auth utilities)
+- Single-page application with authenticated home route and login page
 - Theme toggle for dark/light mode switching
 
 **Display Format**
@@ -45,16 +49,19 @@ Preferred communication style: Simple, everyday language.
 **Technology Stack**
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
+- **Authentication**: Replit Auth (OpenID Connect) with Passport.js
 - **ORM**: Drizzle ORM
 - **Database**: PostgreSQL (via Neon serverless driver)
 - **Build Tool**: esbuild for production builds
 
 **API Design**
-- RESTful API endpoints under `/api/tshirts`
+- RESTful API endpoints under `/api/tshirts` (all protected with authentication)
+- Authentication endpoints: `/api/login`, `/api/logout`, `/api/callback`, `/api/auth/user`
 - Standard HTTP methods (GET, POST, PUT, DELETE)
 - JSON request/response format
 - Input validation using Zod schemas
 - Error handling with appropriate HTTP status codes
+- 401 Unauthorized responses for unauthenticated requests
 
 **Data Layer**
 - Abstracted storage interface (`IStorage`) for flexibility
@@ -73,9 +80,24 @@ Preferred communication style: Simple, everyday language.
 
 ### Database Schema
 
+**Users Table** (`users`) - Required for Replit Auth
+- `id`: VARCHAR (primary key, auto-generated UUID)
+- `email`: VARCHAR (unique) - user's email address
+- `firstName`: VARCHAR - user's first name
+- `lastName`: VARCHAR - user's last name
+- `profileImageUrl`: VARCHAR - URL to user's profile image
+- `createdAt`: TIMESTAMP - when user was created
+- `updatedAt`: TIMESTAMP - when user was last updated
+
+**Sessions Table** (`sessions`) - Required for Replit Auth
+- `sid`: VARCHAR (primary key) - session ID
+- `sess`: JSONB - session data
+- `expire`: TIMESTAMP - session expiration time
+- Indexed on `expire` for efficient cleanup
+
 **T-Shirts Table** (`tshirts`)
 - `id`: VARCHAR (primary key, auto-generated UUID)
-- `size`: TEXT (required) - stores size values like XS, S, M, L, XL, XXL
+- `size`: TEXT (required) - stores size values like S, M, L, XL, XXL
 - `color`: TEXT (required) - stores color names as text (e.g., "Red", "Blue", "Navy")
 - `quantity`: INTEGER (required, default 0) - inventory quantity for this color/size combination (must be >= 0)
 
@@ -96,7 +118,7 @@ Preferred communication style: Simple, everyday language.
 - Shared schema definitions in `shared/schema.ts`
 - Zod schemas for runtime validation
 - TypeScript types inferred from Drizzle schema
-- `InsertTshirt` and `Tshirt` types exported for use across client/server
+- Exported types: `User`, `UpsertUser`, `InsertTshirt`, `Tshirt`
 
 **Path Aliases**
 - `@/` maps to `client/src/`
