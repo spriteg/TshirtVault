@@ -60,25 +60,26 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                   {groupedByColor[color].map((tshirt, index) => (
                     <div
                       key={tshirt.id}
-                      className="flex items-center gap-3 px-4 py-2 rounded-md bg-muted/30 hover-elevate"
+                      className="flex items-center gap-3 px-4 py-3 rounded-md bg-muted/30 hover-elevate"
                       data-testid={`item-tshirt-${color}-${index}`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                          Size
-                        </span>
-                        <span className="font-medium" data-testid={`text-size-${color}-${index}`}>
-                          {tshirt.size}
-                        </span>
-                      </div>
-                      <div className="h-4 w-px bg-border" />
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                          Qty
-                        </span>
-                        <span className="font-medium" data-testid={`text-quantity-${color}-${index}`}>
-                          {tshirt.quantity}
-                        </span>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Size
+                          </span>
+                          <span className="font-medium" data-testid={`text-size-${color}-${index}`}>
+                            {tshirt.size}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Qty
+                          </span>
+                          <span className="font-medium" data-testid={`text-quantity-${color}-${index}`}>
+                            {tshirt.quantity}
+                          </span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1 ml-2">
                         <Button
@@ -120,7 +121,7 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                       className="flex items-center justify-between gap-3 p-3 rounded-md bg-muted/30"
                       data-testid={`item-tshirt-mobile-${color}-${index}`}
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xs uppercase tracking-wide text-muted-foreground">
                             Size
@@ -129,17 +130,16 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
                             {tshirt.size}
                           </span>
                         </div>
-                        <div className="h-4 w-px bg-border" />
                         <div className="flex items-center gap-2">
                           <span className="text-xs uppercase tracking-wide text-muted-foreground">
                             Qty
                           </span>
-                          <span className="font-medium" data-testid={`text-quantity-mobile-${color}-${index}`}>
+                          <span className="text-sm font-medium" data-testid={`text-quantity-mobile-${color}-${index}`}>
                             {tshirt.quantity}
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex gap-2 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
