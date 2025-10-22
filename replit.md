@@ -58,10 +58,12 @@ Preferred communication style: Simple, everyday language.
 
 **Data Layer**
 - Abstracted storage interface (`IStorage`) for flexibility
-- In-memory storage implementation (`MemStorage`) for development
+- PostgreSQL storage implementation (`PostgresStorage`) for production persistence
+- In-memory storage fallback (`MemStorage`) available for testing
 - Database schema defined with Drizzle ORM in `shared/schema.ts`
 - PostgreSQL table with `id`, `size`, `color`, and `quantity` fields
-- UUID primary keys generated via PostgreSQL's `gen_random_uuid()`
+- UUID primary keys auto-generated via PostgreSQL's `gen_random_uuid()`
+- All data persists across server restarts and sessions
 
 **Development Architecture**
 - Vite dev server integrated with Express in development
@@ -81,6 +83,12 @@ Preferred communication style: Simple, everyday language.
 - Drizzle Kit for schema migrations
 - Migrations stored in `/migrations` directory
 - Push-based deployment via `db:push` script
+
+**Active Database**
+- PostgreSQL database provisioned via Replit
+- Data persists across sessions and server restarts
+- Accessed via `DATABASE_URL` environment variable
+- Managed through Drizzle ORM with Neon serverless driver
 
 ### Shared Code
 
