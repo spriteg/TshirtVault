@@ -148,7 +148,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Size</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value} disabled={isEditing}>
                     <FormControl>
                       <SelectTrigger data-testid="select-size">
                         <SelectValue placeholder="Select a size" />
@@ -179,6 +179,7 @@ export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) 
                       type="text"
                       placeholder="e.g., Red, Blue, Green"
                       {...field}
+                      disabled={isEditing}
                       data-testid="input-color"
                     />
                   </FormControl>
