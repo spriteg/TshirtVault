@@ -38,7 +38,7 @@ interface TshirtDialogProps {
   tshirt: Tshirt | null;
 }
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const SIZES = ["S", "M", "L", "XL", "XXL"];
 
 export function TshirtDialog({ open, onOpenChange, tshirt }: TshirtDialogProps) {
   const { toast } = useToast();
