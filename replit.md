@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is a full-stack t-shirt inventory management application built with React, Express, and PostgreSQL. The application allows users to create, read, update, and delete t-shirt records with size and color information. It features a clean, modern UI inspired by Linear and Notion's design principles, with support for both light and dark themes.
+This is a full-stack t-shirt inventory management application built with React, Express, and PostgreSQL. The application allows users to create, read, update, and delete t-shirt records with size, color, and quantity information. It features a clean, modern UI inspired by Linear and Notion's design principles, with support for both light and dark themes.
+
+**Key Feature**: Inventory is displayed grouped by color, with all sizes and quantities for each color shown inline on the same line as the color name.
 
 ## User Preferences
 
@@ -28,9 +30,15 @@ Preferred communication style: Simple, everyday language.
 
 **Component Structure**
 - Modular UI components in `client/src/components/ui/` (shadcn/ui components)
-- Feature components for t-shirt management (dialog, table, filters, empty states)
+- Feature components for t-shirt management (dialog, grouped color display, filters, empty states)
 - Single-page application with home route and 404 fallback
 - Theme toggle for dark/light mode switching
+
+**Display Format**
+- **Grouped by Color**: T-shirts are automatically grouped by color
+- **Inline Display**: Each color is shown as a label with all its sizes and quantities displayed inline on the same line
+- **Desktop**: Color name on the left, size/quantity items as inline chips that wrap to the right
+- **Mobile**: Color as header with total, size/quantity items stacked below
 
 ### Backend Architecture
 
@@ -52,7 +60,7 @@ Preferred communication style: Simple, everyday language.
 - Abstracted storage interface (`IStorage`) for flexibility
 - In-memory storage implementation (`MemStorage`) for development
 - Database schema defined with Drizzle ORM in `shared/schema.ts`
-- PostgreSQL table with `id`, `size`, and `color` fields
+- PostgreSQL table with `id`, `size`, `color`, and `quantity` fields
 - UUID primary keys generated via PostgreSQL's `gen_random_uuid()`
 
 **Development Architecture**
@@ -66,7 +74,8 @@ Preferred communication style: Simple, everyday language.
 **T-Shirts Table** (`tshirts`)
 - `id`: VARCHAR (primary key, auto-generated UUID)
 - `size`: TEXT (required) - stores size values like XS, S, M, L, XL, XXL
-- `color`: TEXT (required) - stores color names or hex values
+- `color`: TEXT (required) - stores color names as text (e.g., "Red", "Blue", "Navy")
+- `quantity`: INTEGER (required, default 0) - inventory quantity for this color/size combination (must be >= 0)
 
 **Migration Strategy**
 - Drizzle Kit for schema migrations

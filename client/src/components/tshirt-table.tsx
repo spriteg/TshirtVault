@@ -45,146 +45,124 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
 
   return (
     <>
-      {/* Desktop View - Grouped by Color */}
-      <div className="hidden md:block space-y-6">
+      <div className="space-y-4">
         {colors.map((color) => (
-          <Card key={color} className="overflow-hidden" data-testid={`color-group-${color}`}>
-            <div className="bg-muted/50 px-6 py-4 border-b">
-              <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold" data-testid={`text-color-header-${color}`}>
-                  {color}
-                </h3>
-                <Badge variant="secondary" data-testid={`badge-count-${color}`}>
-                  {groupedByColor[color].reduce((sum, t) => sum + t.quantity, 0)} total
-                </Badge>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/30 border-b">
-                  <tr>
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        Size
-                      </span>
-                    </th>
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        Quantity
-                      </span>
-                    </th>
-                    <th className="px-6 py-3 text-right">
-                      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        Actions
-                      </span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
+          <Card key={color} className="p-6" data-testid={`color-group-${color}`}>
+            <div className="flex flex-col gap-4">
+              {/* Color and Items on Same Line for Desktop */}
+              <div className="hidden md:flex md:items-start md:gap-6">
+                <div className="min-w-[120px]">
+                  <h3 className="text-lg font-semibold" data-testid={`text-color-header-${color}`}>
+                    {color}
+                  </h3>
+                </div>
+                <div className="flex-1 flex flex-wrap gap-4">
                   {groupedByColor[color].map((tshirt, index) => (
-                    <tr
+                    <div
                       key={tshirt.id}
-                      className="hover-elevate"
-                      data-testid={`row-tshirt-${color}-${index}`}
+                      className="flex items-center gap-3 px-4 py-2 rounded-md bg-muted/30 hover-elevate"
+                      data-testid={`item-tshirt-${color}-${index}`}
                     >
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-medium" data-testid={`text-size-${color}-${index}`}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Size
+                        </span>
+                        <span className="font-medium" data-testid={`text-size-${color}-${index}`}>
                           {tshirt.size}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-medium" data-testid={`text-quantity-${color}-${index}`}>
+                      </div>
+                      <div className="h-4 w-px bg-border" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Qty
+                        </span>
+                        <span className="font-medium" data-testid={`text-quantity-${color}-${index}`}>
                           {tshirt.quantity}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => onEdit(tshirt)}
-                            data-testid={`button-edit-${color}-${index}`}
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteClick(tshirt)}
-                            data-testid={`button-delete-${color}-${index}`}
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
+                      </div>
+                      <div className="flex items-center gap-1 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => onEdit(tshirt)}
+                          data-testid={`button-edit-${color}-${index}`}
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7"
+                          onClick={() => handleDeleteClick(tshirt)}
+                          data-testid={`button-delete-${color}-${index}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Mobile View - Grouped by Color */}
-      <div className="md:hidden space-y-6">
-        {colors.map((color) => (
-          <Card key={color} className="overflow-hidden" data-testid={`color-group-mobile-${color}`}>
-            <div className="bg-muted/50 px-4 py-3 border-b">
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold" data-testid={`text-color-header-mobile-${color}`}>
-                  {color}
-                </h3>
-                <Badge variant="secondary" className="text-xs" data-testid={`badge-count-mobile-${color}`}>
-                  {groupedByColor[color].reduce((sum, t) => sum + t.quantity, 0)}
-                </Badge>
-              </div>
-            </div>
-            <div className="divide-y">
-              {groupedByColor[color].map((tshirt, index) => (
-                <div
-                  key={tshirt.id}
-                  className="p-4 flex items-center justify-between gap-4"
-                  data-testid={`card-tshirt-${color}-${index}`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Size
-                      </span>
-                      <span className="font-medium" data-testid={`text-size-mobile-${color}-${index}`}>
-                        {tshirt.size}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Qty
-                      </span>
-                      <span className="text-sm font-medium" data-testid={`text-quantity-mobile-${color}-${index}`}>
-                        {tshirt.quantity}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(tshirt)}
-                      data-testid={`button-edit-mobile-${color}-${index}`}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteClick(tshirt)}
-                      data-testid={`button-delete-mobile-${color}-${index}`}
-                    >
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
-                  </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Mobile View - Color as Header with Items Below */}
+              <div className="md:hidden">
+                <h3 className="text-base font-semibold mb-3 flex items-center gap-2" data-testid={`text-color-header-mobile-${color}`}>
+                  {color}
+                  <Badge variant="secondary" className="text-xs" data-testid={`badge-count-mobile-${color}`}>
+                    {groupedByColor[color].reduce((sum, t) => sum + t.quantity, 0)}
+                  </Badge>
+                </h3>
+                <div className="space-y-2">
+                  {groupedByColor[color].map((tshirt, index) => (
+                    <div
+                      key={tshirt.id}
+                      className="flex items-center justify-between gap-3 p-3 rounded-md bg-muted/30"
+                      data-testid={`item-tshirt-mobile-${color}-${index}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Size
+                          </span>
+                          <span className="font-medium" data-testid={`text-size-mobile-${color}-${index}`}>
+                            {tshirt.size}
+                          </span>
+                        </div>
+                        <div className="h-4 w-px bg-border" />
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Qty
+                          </span>
+                          <span className="font-medium" data-testid={`text-quantity-mobile-${color}-${index}`}>
+                            {tshirt.quantity}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => onEdit(tshirt)}
+                          data-testid={`button-edit-mobile-${color}-${index}`}
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleDeleteClick(tshirt)}
+                          data-testid={`button-delete-mobile-${color}-${index}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </Card>
         ))}
