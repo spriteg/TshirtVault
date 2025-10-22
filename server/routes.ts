@@ -2,10 +2,27 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertTshirtSchema } from "@shared/schema";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication - Referenced from blueprint:javascript_log_in_with_replit
+  await setupAuth(app);
+
+  // GET /api/auth/user - Get current authenticated user
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Protected T-Shirt Routes - Require authentication
   // GET /api/tshirts - Get all t-shirts
-  app.get("/api/tshirts", async (_req, res) => {
+  app.get("/api/tshirts", isAuthenticated, async (_req, res) => {
     try {
       const tshirts = await storage.getTshirts();
       res.json(tshirts);
@@ -15,7 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // GET /api/tshirts/:id - Get a single t-shirt
-  app.get("/api/tshirts/:id", async (req, res) => {
+  app.get("/api/tshirts/:id", isAuthenticated, async (req, res) => {
     try {
       const tshirt = await storage.getTshirt(req.params.id);
       if (!tshirt) {
@@ -28,7 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // POST /api/tshirts - Create a new t-shirt
-  app.post("/api/tshirts", async (req, res) => {
+  app.post("/api/tshirts", isAuthenticated, async (req, res) => {
     try {
       const result = insertTshirtSchema.safeParse(req.body);
       if (!result.success) {
@@ -46,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // PUT /api/tshirts/:id - Update a t-shirt
-  app.put("/api/tshirts/:id", async (req, res) => {
+  app.put("/api/tshirts/:id", isAuthenticated, async (req, res) => {
     try {
       const result = insertTshirtSchema.safeParse(req.body);
       if (!result.success) {
@@ -67,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // DELETE /api/tshirts/:id - Delete a t-shirt
-  app.delete("/api/tshirts/:id", async (req, res) => {
+  app.delete("/api/tshirts/:id", isAuthenticated, async (req, res) => {
     try {
       const deleted = await storage.deleteTshirt(req.params.id);
       if (!deleted) {

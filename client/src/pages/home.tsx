@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { type Tshirt } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter, Palette, Ruler } from "lucide-react";
+import { Plus, Search, Filter, Palette, Ruler, LogOut } from "lucide-react";
 import { TshirtDialog } from "@/components/tshirt-dialog";
 import { TshirtTable } from "@/components/tshirt-table";
 import { TshirtEmptyState } from "@/components/tshirt-empty-state";
@@ -62,6 +62,14 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <Button 
+                variant="ghost"
+                size="icon"
+                onClick={() => window.location.href = "/api/logout"}
+                data-testid="button-logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
               <Button 
                 onClick={handleAddNew}
                 data-testid="button-add-tshirt"

@@ -1,10 +1,15 @@
-import { type Tshirt, type InsertTshirt, tshirts } from "@shared/schema";
+import { type Tshirt, type InsertTshirt, tshirts, type User, type UpsertUser, users } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
+  // User operations - Required for Replit Auth
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
+  // T-Shirt operations
   getTshirts(): Promise<Tshirt[]>;
   getTshirt(id: string): Promise<Tshirt | undefined>;
   createTshirt(tshirt: InsertTshirt): Promise<Tshirt>;
@@ -14,11 +19,33 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private tshirts: Map<string, Tshirt>;
+  private users: Map<string, User>;
 
   constructor() {
     this.tshirts = new Map();
+    this.users = new Map();
   }
 
+  // User operations - Stub implementations for testing
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const user: User = {
+      id: userData.id || randomUUID(),
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(user.id, user);
+    return user;
+  }
+
+  // T-Shirt operations
   async getTshirts(): Promise<Tshirt[]> {
     return Array.from(this.tshirts.values());
   }
@@ -60,6 +87,28 @@ export class PostgresStorage implements IStorage {
     this.db = drizzle(sql);
   }
 
+  // User operations - Required for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await this.db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await this.db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // T-Shirt operations
   async getTshirts(): Promise<Tshirt[]> {
     return await this.db.select().from(tshirts);
   }
