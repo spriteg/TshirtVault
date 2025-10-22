@@ -29,6 +29,8 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
     setDeletingTshirt(null);
   };
 
+  const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL'];
+
   const groupedByColor = useMemo(() => {
     const grouped: GroupedTshirts = {};
     tshirts.forEach((tshirt) => {
@@ -38,6 +40,22 @@ export function TshirtTable({ tshirts, onEdit }: TshirtTableProps) {
       }
       grouped[color].push(tshirt);
     });
+    
+    // Sort items within each color by size order
+    Object.keys(grouped).forEach((color) => {
+      grouped[color].sort((a, b) => {
+        const aIndex = sizeOrder.indexOf(a.size.toUpperCase());
+        const bIndex = sizeOrder.indexOf(b.size.toUpperCase());
+        
+        // If size not in predefined order, put it at the end
+        if (aIndex === -1 && bIndex === -1) return a.size.localeCompare(b.size);
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        
+        return aIndex - bIndex;
+      });
+    });
+    
     return grouped;
   }, [tshirts]);
 
