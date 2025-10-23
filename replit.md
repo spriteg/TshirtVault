@@ -98,6 +98,8 @@ Preferred communication style: Simple, everyday language.
 - `size`: TEXT (required) - stores size values like S, M, L, XL, XXL
 - `color`: TEXT (required) - stores color names as text (e.g., "Red", "Blue", "Navy")
 - `quantity`: INTEGER (required, default 0) - inventory quantity for this color/size combination (must be >= 0)
+- **Unique Constraint**: Combination of (color, size) must be unique - only one entry allowed per color/size pair
+- **Upsert Behavior**: When adding a t-shirt with existing color+size, the quantity is updated instead of creating a duplicate
 
 **Migration Strategy**
 - Drizzle Kit for schema migrations
