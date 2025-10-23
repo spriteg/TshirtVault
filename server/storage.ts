@@ -1,13 +1,23 @@
-import { type Tshirt, type InsertTshirt, tshirts, type User, type UpsertUser, users } from "@shared/schema";
+import { type Tshirt, type InsertTshirt, tshirts, type User, type InsertUser, users } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
+import session, { type Store } from "express-session";
+import connectPg from "connect-pg-simple";
+import createMemoryStore from "memorystore";
+
+const PostgresSessionStore = connectPg(session);
+const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
-  // User operations - Required for Replit Auth
+  // User operations - Required for authentication
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
+  // Session store for authentication
+  sessionStore: Store;
   
   // T-Shirt operations
   getTshirts(): Promise<Tshirt[]>;
@@ -20,26 +30,30 @@ export interface IStorage {
 export class MemStorage implements IStorage {
   private tshirts: Map<string, Tshirt>;
   private users: Map<string, User>;
+  public sessionStore: Store;
 
   constructor() {
     this.tshirts = new Map();
     this.users = new Map();
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000,
+    });
   }
 
-  // User operations - Stub implementations for testing
+  // User operations - Username/password authentication
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(u => u.username === username);
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
     const user: User = {
-      id: userData.id || randomUUID(),
-      email: userData.email || null,
-      firstName: userData.firstName || null,
-      lastName: userData.lastName || null,
-      profileImageUrl: userData.profileImageUrl || null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      id: randomUUID(),
+      username: userData.username,
+      password: userData.password,
     };
     this.users.set(user.id, user);
     return user;
@@ -78,6 +92,7 @@ export class MemStorage implements IStorage {
 
 export class PostgresStorage implements IStorage {
   private db;
+  public sessionStore: Store;
 
   constructor() {
     if (!process.env.DATABASE_URL) {
@@ -85,25 +100,32 @@ export class PostgresStorage implements IStorage {
     }
     const sql = neon(process.env.DATABASE_URL);
     this.db = drizzle(sql);
+    
+    // Set up PostgreSQL session store
+    const pool = new (require('pg').Pool)({
+      connectionString: process.env.DATABASE_URL,
+    });
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
   }
 
-  // User operations - Required for Replit Auth
+  // User operations - Username/password authentication
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await this.db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await this.db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
     const [user] = await this.db
       .insert(users)
       .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
       .returning();
     return user;
   }
