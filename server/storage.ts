@@ -6,7 +6,9 @@ import { eq } from "drizzle-orm";
 import session, { type Store } from "express-session";
 import connectPg from "connect-pg-simple";
 import createMemoryStore from "memorystore";
+import pkg from 'pg';
 
+const { Pool } = pkg;
 const PostgresSessionStore = connectPg(session);
 const MemoryStore = createMemoryStore(session);
 
@@ -102,7 +104,7 @@ export class PostgresStorage implements IStorage {
     this.db = drizzle(sql);
     
     // Set up PostgreSQL session store
-    const pool = new (require('pg').Pool)({
+    const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
     });
     this.sessionStore = new PostgresSessionStore({ 

@@ -1,24 +1,20 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertTshirtSchema } from "@shared/schema";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth } from "./auth";
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup authentication - Referenced from blueprint:javascript_log_in_with_replit
-  await setupAuth(app);
+// Middleware to check if user is authenticated
+function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized" });
+}
 
-  // GET /api/auth/user - Get current authenticated user
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+export function registerRoutes(app: Express): Server {
+  // Setup authentication - Referenced from blueprint:javascript_auth_all_persistance
+  setupAuth(app);
 
   // Protected T-Shirt Routes - Require authentication
   // GET /api/tshirts - Get all t-shirts
