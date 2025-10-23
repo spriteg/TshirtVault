@@ -10,12 +10,14 @@ import { TshirtEmptyState } from "@/components/tshirt-empty-state";
 import { TshirtTableSkeleton } from "@/components/tshirt-table-skeleton";
 import { SizeFilter } from "@/components/size-filter";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTshirt, setEditingTshirt] = useState<Tshirt | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const { logoutMutation } = useAuth();
 
   const { data: tshirts, isLoading } = useQuery<Tshirt[]>({
     queryKey: ["/api/tshirts"],
@@ -65,8 +67,9 @@ export default function Home() {
               <Button 
                 variant="ghost"
                 size="icon"
-                onClick={() => window.location.href = "/api/logout"}
+                onClick={() => logoutMutation.mutate()}
                 data-testid="button-logout"
+                disabled={logoutMutation.isPending}
               >
                 <LogOut className="w-4 h-4" />
               </Button>
