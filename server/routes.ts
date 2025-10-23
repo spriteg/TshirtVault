@@ -40,7 +40,7 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // POST /api/tshirts - Create a new t-shirt
+  // POST /api/tshirts - Create or update a t-shirt (upsert based on color+size)
   app.post("/api/tshirts", isAuthenticated, async (req, res) => {
     try {
       const result = insertTshirtSchema.safeParse(req.body);
@@ -51,7 +51,7 @@ export function registerRoutes(app: Express): Server {
         });
       }
 
-      const tshirt = await storage.createTshirt(result.data);
+      const tshirt = await storage.upsertTshirt(result.data);
       res.status(201).json(tshirt);
     } catch (error) {
       res.status(500).json({ error: "Failed to create t-shirt" });

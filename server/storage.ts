@@ -27,6 +27,7 @@ export interface IStorage {
   createTshirt(tshirt: InsertTshirt): Promise<Tshirt>;
   updateTshirt(id: string, tshirt: InsertTshirt): Promise<Tshirt | undefined>;
   deleteTshirt(id: string): Promise<boolean>;
+  upsertTshirt(tshirt: InsertTshirt): Promise<Tshirt>;
 }
 
 export class MemStorage implements IStorage {
@@ -89,6 +90,23 @@ export class MemStorage implements IStorage {
 
   async deleteTshirt(id: string): Promise<boolean> {
     return this.tshirts.delete(id);
+  }
+
+  async upsertTshirt(insertTshirt: InsertTshirt): Promise<Tshirt> {
+    // Find existing t-shirt with same color and size
+    const existing = Array.from(this.tshirts.values()).find(
+      t => t.color === insertTshirt.color && t.size === insertTshirt.size
+    );
+    
+    if (existing) {
+      // Update existing t-shirt
+      const updated: Tshirt = { ...existing, ...insertTshirt };
+      this.tshirts.set(existing.id, updated);
+      return updated;
+    } else {
+      // Create new t-shirt
+      return this.createTshirt(insertTshirt);
+    }
   }
 }
 
@@ -159,6 +177,21 @@ export class PostgresStorage implements IStorage {
   async deleteTshirt(id: string): Promise<boolean> {
     const results = await this.db.delete(tshirts).where(eq(tshirts.id, id)).returning();
     return results.length > 0;
+  }
+
+  async upsertTshirt(insertTshirt: InsertTshirt): Promise<Tshirt> {
+    // Use onConflictDoUpdate to handle the unique constraint on (color, size)
+    const [result] = await this.db
+      .insert(tshirts)
+      .values(insertTshirt)
+      .onConflictDoUpdate({
+        target: [tshirts.color, tshirts.size],
+        set: {
+          quantity: insertTshirt.quantity,
+        },
+      })
+      .returning();
+    return result;
   }
 }
 
