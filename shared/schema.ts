@@ -1,11 +1,12 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, timestamp, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, timestamp, jsonb, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Session storage table - Required for authentication
+// Note: Table name is "session" to match connect-pg-simple default
 export const sessions = pgTable(
-  "sessions",
+  "session",
   {
     sid: varchar("sid").primaryKey(),
     sess: jsonb("sess").notNull(),
@@ -34,7 +35,9 @@ export const tshirts = pgTable("tshirts", {
   size: text("size").notNull(),
   color: text("color").notNull(),
   quantity: integer("quantity").notNull().default(0),
-});
+}, (table) => [
+  uniqueIndex("color_size_unique").on(table.color, table.size),
+]);
 
 export const insertTshirtSchema = createInsertSchema(tshirts).omit({
   id: true,
