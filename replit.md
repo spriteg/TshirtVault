@@ -5,7 +5,7 @@
 This is a full-stack t-shirt inventory management application built with React, Express, and PostgreSQL. The application requires user authentication and allows authenticated users to create, read, update, and delete t-shirt records with size, color, and quantity information. It features a clean, modern UI inspired by Linear and Notion's design principles, with support for both light and dark themes.
 
 **Key Features**:
-- **Authentication Required**: Users must log in with email/password (or social auth) via Replit Auth to access the application
+- **Authentication Required**: Users must log in with username/password to access the application
 - **Protected Inventory**: All inventory data and operations require authentication
 - **Grouped Display**: Inventory is displayed grouped by color, with all sizes and quantities for each color shown inline on the same line as the color name
 
@@ -49,19 +49,20 @@ Preferred communication style: Simple, everyday language.
 **Technology Stack**
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
-- **Authentication**: Replit Auth (OpenID Connect) with Passport.js
+- **Authentication**: Username/password with Passport.js LocalStrategy and express-session
 - **ORM**: Drizzle ORM
 - **Database**: PostgreSQL (via Neon serverless driver)
 - **Build Tool**: esbuild for production builds
 
 **API Design**
 - RESTful API endpoints under `/api/tshirts` (all protected with authentication)
-- Authentication endpoints: `/api/login`, `/api/logout`, `/api/callback`, `/api/auth/user`
+- Authentication endpoints: `/api/register`, `/api/login`, `/api/logout`, `/api/user`
 - Standard HTTP methods (GET, POST, PUT, DELETE)
 - JSON request/response format
 - Input validation using Zod schemas
 - Error handling with appropriate HTTP status codes
 - 401 Unauthorized responses for unauthenticated requests
+- Password hashing using scrypt with salt for secure storage
 
 **Data Layer**
 - Abstracted storage interface (`IStorage`) for flexibility
@@ -80,19 +81,16 @@ Preferred communication style: Simple, everyday language.
 
 ### Database Schema
 
-**Users Table** (`users`) - Required for Replit Auth
+**Users Table** (`users`) - Required for authentication
 - `id`: VARCHAR (primary key, auto-generated UUID)
-- `email`: VARCHAR (unique) - user's email address
-- `firstName`: VARCHAR - user's first name
-- `lastName`: VARCHAR - user's last name
-- `profileImageUrl`: VARCHAR - URL to user's profile image
-- `createdAt`: TIMESTAMP - when user was created
-- `updatedAt`: TIMESTAMP - when user was last updated
+- `username`: VARCHAR (unique) - user's username for login
+- `password`: VARCHAR - hashed password using scrypt
 
-**Sessions Table** (`sessions`) - Required for Replit Auth
+**Sessions Table** (`session`) - Required for express-session
 - `sid`: VARCHAR (primary key) - session ID
 - `sess`: JSONB - session data
 - `expire`: TIMESTAMP - session expiration time
+- Managed automatically by connect-pg-simple with `createTableIfMissing: true`
 - Indexed on `expire` for efficient cleanup
 
 **T-Shirts Table** (`tshirts`)
@@ -118,7 +116,7 @@ Preferred communication style: Simple, everyday language.
 - Shared schema definitions in `shared/schema.ts`
 - Zod schemas for runtime validation
 - TypeScript types inferred from Drizzle schema
-- Exported types: `User`, `UpsertUser`, `InsertTshirt`, `Tshirt`
+- Exported types: `User`, `InsertUser`, `InsertTshirt`, `Tshirt`
 
 **Path Aliases**
 - `@/` maps to `client/src/`
@@ -189,4 +187,7 @@ Preferred communication style: Simple, everyday language.
 - **wouter**: Lightweight routing library
 
 ### Session Management
-- **connect-pg-simple**: PostgreSQL session store (included but not actively used in current implementation)
+- **express-session**: Session middleware for Express
+- **connect-pg-simple**: PostgreSQL session store for persistent sessions
+- **passport**: Authentication middleware for Node.js
+- **passport-local**: LocalStrategy for username/password authentication
